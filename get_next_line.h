@@ -6,7 +6,7 @@
 /*   By: cyelena <cyelena@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/14 17:28:42 by cyelena           #+#    #+#             */
-/*   Updated: 2021/11/20 18:49:15 by cyelena          ###   ########.fr       */
+/*   Updated: 2021/11/21 20:12:37 by cyelena          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,16 @@
 # include <stdlib.h>
 # define BUF_SIZE 35
 
+typedef struct get_next_line1
+{
+	int						fd;
+	char					*r;
+	struct get_next_line1	*next;
+}	t_GNL;
+
+t_GNL	*new_iinked_list(int fd);
 int		get_next_line(int fd, char **line);
+int		get_line(int fd, char **line, char **r);
 size_t	ft_strlen(const char *s);
 char	*ft_strdup(const char *s);
 size_t	ft_strlcpy(char *dst, const char *src, size_t size);

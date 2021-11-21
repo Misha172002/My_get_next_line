@@ -6,7 +6,7 @@
 /*   By: cyelena <cyelena@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/14 17:25:16 by cyelena           #+#    #+#             */
-/*   Updated: 2021/11/20 19:08:49 by cyelena          ###   ########.fr       */
+/*   Updated: 2021/11/21 20:29:54 by cyelena          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,33 +38,63 @@ char	*check_r(char *r, char **line)
 	return (p_n);
 }
 
-int	get_next_line(int fd, char **line)
+int	get_line(int fd, char **line, char **r)
 {
 	char		buf[BUF_SIZE + 1];
 	int			byte_was_read;
 	char		*p_n;
-	static char	*r;
 	char		*tmp;
 
-	p_n = check_r(r, line);
+	p_n = check_r(*r, line);
 	while (!p_n && ((byte_was_read = read(fd, buf, BUF_SIZE))))
 	{
 		if ((p_n = ft_strchr(buf, '\n')))
 		{
 			*p_n = '\0';
 			p_n++;
-			r = ft_strdup(p_n);
+			*r = ft_strdup(p_n);
 		}
 		buf[byte_was_read] = '\0';
 		tmp = *line;
-		*line = ft_strjoin(*line, buf);
+		if (!(*line = ft_strjoin(*line, buf)) || byte_was_read < 0)
+			return (-1);
 		free(tmp);
 	}
-	if (byte_was_read || ft_strlen(r) || ft_strlen(*line))
+	if (byte_was_read || ft_strlen(*line))
 	{
 		return (1);
 	}
 	return (0);
+}
+
+int	get_next_line(int fd, char **line)
+{
+	static t_GNL	*head;
+	t_GNL			*tmp;
+
+	if (fd < 0 ||line == NULL)
+		return (-1);
+	if (head == NULL)
+		head = new_iinked_list(fd);
+	tmp = head;
+	while (tmp->fd != fd)
+	{
+		if (tmp->next == NULL)
+			tmp->next = new_iinked_list(fd);
+		tmp = tmp->next;
+	}
+	return (get_line(tmp->fd, line, &tmp->r));
+}
+
+t_GNL	*new_iinked_list(int fd)
+{
+	t_GNL	*new;
+
+	new = (t_GNL *)malloc(sizeof(t_GNL));
+	new->fd = fd;
+	new->r = NULL;
+	new->next = NULL;
+	return (new);
 }
 
 void	ft_strcln(char *s)
@@ -183,29 +213,45 @@ char	*ft_strjoin(char const *s1, char const *s2)
 	return (s);
 }
 
-int	main()
-{
-	char	*line;
-	int		fd;
+// int	main(void)
+// {
+// 	char	*line;
+// 	int		fd1;
+// 	int		fd2;
+// 	int		counter;
 
-	fd = open("text.txt", O_RDONLY);
-	while (get_next_line(fd, &line))
-		printf("%s\n\n", line);
-
-	// get_next_line(fd, &line);
-	// printf("%s\n\n", line);
-	// get_next_line(fd, &line);
-	// printf("%s\n\n", line);
-	// get_next_line(fd, &line);
-	// printf("%s\n\n", line);
-	// get_next_line(fd, &line);
-	// printf("%s\n\n", line);
-	// get_next_line(fd, &line);
-	// printf("%s\n\n", line);
-	// get_next_line(fd, &line);
-	// printf("%s\n\n", line);
-	// get_next_line(fd, &line);
-	// printf("%s\n\n", line);
-	// get_next_line(fd, &line);
-	// printf("%s\n", line);
-}
+// 	fd1 = open("text.txt", O_RDONLY);
+// 	fd2 = open("text2.txt", O_RDONLY);
+// 	counter = 0;
+// 	while (get_next_line(fd1, &line) && counter < 3)
+// 	{
+// 		printf("%s\n", line);
+// 		counter++;
+// 	}
+// 	while (get_next_line(fd2, &line) && counter < 7)
+// 	{
+// 		printf("%s\n", line);
+// 		counter++;
+// 	}
+// 	while (get_next_line(fd1, &line) && counter < 9)
+// 	{
+// 		printf("%s\n", line);
+// 		counter++;
+// 	}
+// 	// get_next_line(fd, &line);
+// 	// printf("%s\n\n", line);
+// // // 	// get_next_line(fd, &line);
+// // // 	// printf("%s\n\n", line);
+// // // 	// get_next_line(fd, &line);
+// // // 	// printf("%s\n\n", line);
+// // // 	// get_next_line(fd, &line);
+// // // 	// printf("%s\n\n", line);
+// // // 	// get_next_line(fd, &line);
+// // // 	// printf("%s\n\n", line);
+// // // 	// get_next_line(fd, &line);
+// // // 	// printf("%s\n\n", line);
+// // // 	// get_next_line(fd, &line);
+// // // 	// printf("%s\n\n", line);
+// // // 	// get_next_line(fd, &line);
+// // // 	// printf("%s\n", line);
+// }

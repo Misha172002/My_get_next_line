@@ -1,0 +1,4 @@
+1your work to your assigned git repository. Only the work in the git repository will be graded. 
+2is assigned to grade your work, it will be done after your peer-evaluations. 
+3an error happens in any section of your work during
+4grading, the evaluation will stop.
